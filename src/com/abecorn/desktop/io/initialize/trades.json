@@ -1,0 +1,9 @@
+{
+    "trades": [
+        {
+            "tradeId": "Trade1",
+            "startingId":47,
+            "tradeEntries":[{"id":"TE-45", "itemId":"CANDY_BAR","name":"Candy Bar","description":"Yummy Candy Bar","user":"Dean","acceptableTrades":["TE-47"]},{"id":"TE-47", "itemId":"GUMMY_WORM","name":"Gummy Worm","description":"Icky Gummy Worm","user":"Dean","acceptableTrades":["TE-45"]}]
+        }
+    ]
+}
