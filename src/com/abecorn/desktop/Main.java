@@ -15,7 +15,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-            VBox page = (VBox) FXMLLoader.load(Main.class.getResource("AbecornTrackingLite.fxml"));
+            VBox page = (VBox) FXMLLoader.load(Main.class.getResource("AbecornTradingLite.fxml"));
             Scene scene = new Scene(page);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Abecorn Lite");

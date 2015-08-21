@@ -140,20 +140,20 @@ public class AbcornTradingLiteController {
      */
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
-        assert colName != null : "fx:id=\"colName\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert colOwner != null : "fx:id=\"colOwner\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert colSynopsis != null : "fx:id=\"colSynopsis\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert deleteTradeEntry != null : "fx:id=\"deleteTradeEntry\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert descriptionValue != null : "fx:id=\"descriptionValue\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert details != null : "fx:id=\"details\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert displayedIssueLabel != null : "fx:id=\"displayedIssueLabel\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert newTradeEntry != null : "fx:id=\"newTradeEntry\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert saveTradeEntry != null : "fx:id=\"saveTradeEntry\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert synopsis != null : "fx:id=\"synopsis\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert itemId != null : "fx:id=\"itemId\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert owner != null : "fx:id=\"owner\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert table != null : "fx:id=\"table\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
-        assert list != null : "fx:id=\"list\" was not injected: check your FXML file 'AbecornTrackingLite.fxml'.";
+        assert colName != null : "fx:id=\"colName\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert colOwner != null : "fx:id=\"colOwner\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert colSynopsis != null : "fx:id=\"colSynopsis\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert deleteTradeEntry != null : "fx:id=\"deleteTradeEntry\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert descriptionValue != null : "fx:id=\"descriptionValue\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert details != null : "fx:id=\"details\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert displayedIssueLabel != null : "fx:id=\"displayedIssueLabel\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert newTradeEntry != null : "fx:id=\"newTradeEntry\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert saveTradeEntry != null : "fx:id=\"saveTradeEntry\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert synopsis != null : "fx:id=\"synopsis\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert itemId != null : "fx:id=\"itemId\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert owner != null : "fx:id=\"owner\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert table != null : "fx:id=\"table\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
+        assert list != null : "fx:id=\"list\" was not injected: check your FXML file 'AbecornTradingLite.fxml'.";
         
         System.out.println(this.getClass().getSimpleName() + ".initialize");
         configureButtons();

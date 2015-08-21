@@ -66,369 +66,382 @@ import javafx.collections.ObservableMap;
 
 public class TrackingServiceStub implements TrackingService {
 
-    // You add a trade by adding an entry with an empty observable array list
-    // of tradeEntry IDs in the projects Map.
-    private ObservableMap<String, ObservableList<String>> projectsMap;
-    
-    private ObservableMap<String, TradeEntryStub> tradeEntriesMap;
+	// You add a trade by adding an entry with an empty observable array list
+	// of tradeEntry IDs in the projects Map.
+	private ObservableMap<String, ObservableList<String>> projectsMap;
 
-    private ObservableList<String> projectNames;
-    
-    private Map<String,AtomicInteger> tradeEntryCounters;
-    
-    private Set<String> allUsers;
-    
-    // The projectNames list is kept in sync with the project's map by observing
-    // the projectsMap and modifying the projectNames list in consequence.
-    final MapChangeListener<String, ObservableList<String>> projectsMapChangeListener = new MapChangeListener<String, ObservableList<String>>() {
-        @Override
-        public void onChanged(Change<? extends String, ? extends ObservableList<String>> change) {
-            if (change.wasAdded()) projectNames.add(change.getKey());
-            if (change.wasRemoved()) projectNames.remove(change.getKey());
-        }
-    };
-    
-    public TrackingServiceStub(LoadDataReader data){
-    	 final Map<String, ObservableList<String>> map = new TreeMap<>();
-    	 allUsers = new HashSet<String>();
-    	 tradeEntryCounters = new HashMap<String, AtomicInteger>();
-         projectsMap = FXCollections.observableMap(map);
-         for (String s : data.getTradeIds()) {
-             projectsMap.put(s, FXCollections.<String>observableArrayList());
-             //add the counter for each trade
-             tradeEntryCounters.put(s, new AtomicInteger(data.getTradeEntryStartingIds().get(s)));
-         }
-         
-         projectNames = FXCollections.<String>observableArrayList();
-         projectNames.addAll(projectsMap.keySet());
-         projectsMap.addListener(projectsMapChangeListener);
-         
-         final Map<String, TradeEntryStub> tradeEntriesTreeMap = new TreeMap<>();
-         tradeEntriesMap = FXCollections.observableMap(tradeEntriesTreeMap);
-         tradeEntriesMap.addListener(tradeEntriesMapChangeListener);
-         TradeEntryStub ts;
-         for (InitTradeEntry entry: data.getEntries())
-         {
-        	 allUsers.add(entry.getUser());
-        	 this.loadTradeEntry(entry);
-         }
-         
-    }
+	private ObservableMap<String, TradeEntryStub> tradeEntriesMap;
 
-    // A TradeEntry stub.
-    public final class TradeEntryStub implements ObservableTradeEntry {
-       
+	private ObservableList<String> projectNames;
+
+	private Map<String, AtomicInteger> tradeEntryCounters;
+
+	private Set<String> allUsers;
+
+	// The projectNames list is kept in sync with the project's map by observing
+	// the projectsMap and modifying the projectNames list in consequence.
+	final MapChangeListener<String, ObservableList<String>> projectsMapChangeListener = new MapChangeListener<String, ObservableList<String>>() {
+		@Override
+		public void onChanged(Change<? extends String, ? extends ObservableList<String>> change) {
+			if (change.wasAdded())
+				projectNames.add(change.getKey());
+			if (change.wasRemoved())
+				projectNames.remove(change.getKey());
+		}
+	};
+
+	public TrackingServiceStub(LoadDataReader data) {
+		final Map<String, ObservableList<String>> map = new TreeMap<>();
+		allUsers = new HashSet<String>();
+		tradeEntryCounters = new HashMap<String, AtomicInteger>();
+		projectsMap = FXCollections.observableMap(map);
+		for (String s : data.getTradeIds()) {
+			projectsMap.put(s, FXCollections.<String> observableArrayList());
+			// add the counter for each trade
+			tradeEntryCounters.put(s, new AtomicInteger(data.getTradeEntryStartingIds().get(s)));
+		}
+
+		projectNames = FXCollections.<String> observableArrayList();
+		projectNames.addAll(projectsMap.keySet());
+		projectsMap.addListener(projectsMapChangeListener);
+
+		final Map<String, TradeEntryStub> tradeEntriesTreeMap = new TreeMap<>();
+		tradeEntriesMap = FXCollections.observableMap(tradeEntriesTreeMap);
+		tradeEntriesMap.addListener(tradeEntriesMapChangeListener);
+		TradeEntryStub ts;
+		for (InitTradeEntry entry : data.getEntries()) {
+			allUsers.add(entry.getUser());
+			this.loadTradeEntry(entry);
+		}
+
+	}
+
+	// A TradeEntry stub.
+	public final class TradeEntryStub implements ObservableTradeEntry {
 
 		private final SimpleStringProperty id;
-        private final SimpleStringProperty projectName;
-        private final SimpleStringProperty title;
-        private final SimpleStringProperty description;
-        private final SimpleStringProperty itemId;
-        private final SimpleStringProperty user;
-        private SimpleListProperty<String> acceptableTrades;
-        private final SimpleObjectProperty<TradeEntryStatus> status =
-                new SimpleObjectProperty<>(TradeEntryStatus.NEW);
+		private final SimpleStringProperty projectName;
+		private final SimpleStringProperty title;
+		private final SimpleStringProperty description;
+		private final SimpleStringProperty itemId;
+		private final SimpleStringProperty user;
+		private SimpleListProperty<String> acceptableTrades;
+		private final SimpleObjectProperty<TradeEntryStatus> status = new SimpleObjectProperty<>(TradeEntryStatus.NEW);
 
-        TradeEntryStub(String projectName, String id) {
-            this(projectName, id, null);
-        }
-        TradeEntryStub(String projectName, String id, String title) {
-            assert projectNames.contains(projectName);
-            assert ! projectsMap.get(projectName).contains(id);
-            assert ! tradeEntriesMap.containsKey(id);
-            this.projectName = new SimpleStringProperty(projectName);
-            this.id = new SimpleStringProperty(id);
-            this.title = new SimpleStringProperty(title);
-            this.description = new SimpleStringProperty("");
-            this.itemId = new SimpleStringProperty("");
-            this.user = new SimpleStringProperty("");
-            this.acceptableTrades = new SimpleListProperty<String>();
-        }
+		TradeEntryStub(String projectName, String id) {
+			this(projectName, id, null);
+		}
 
-        @Override
-        public TradeEntryStatus getStatus() {
-            return status.get();
-        }
+		TradeEntryStub(String projectName, String id, String title) {
+			assert projectNames.contains(projectName);
+			assert!projectsMap.get(projectName).contains(id);
+			assert!tradeEntriesMap.containsKey(id);
+			this.projectName = new SimpleStringProperty(projectName);
+			this.id = new SimpleStringProperty(id);
+			this.title = new SimpleStringProperty(title);
+			this.description = new SimpleStringProperty("");
+			this.itemId = new SimpleStringProperty("");
+			this.user = new SimpleStringProperty("");
+			this.acceptableTrades = new SimpleListProperty<String>();
+		}
 
-        @Override
-        public String getId() {
-            return id.get();
-        }
+		@Override
+		public TradeEntryStatus getStatus() {
+			return status.get();
+		}
 
-        @Override
-        public String getProjectName() {
-            return projectName.get();
-        }
+		@Override
+		public String getId() {
+			return id.get();
+		}
 
-        @Override
-        public String getSynopsis() {
-            return title.get();
-        }
+		@Override
+		public String getProjectName() {
+			return projectName.get();
+		}
 
-        public void setSynopsis(String title) {
-            this.title.set(title);
-        }
+		@Override
+		public String getSynopsis() {
+			return title.get();
+		}
 
-        @Override
-        public String getDescription() {
-            return description.get();
-        }
+		public void setSynopsis(String title) {
+			this.title.set(title);
+		}
 
-        public void setDescription(String description) {
-            this.description.set(description);
-        }
+		@Override
+		public String getDescription() {
+			return description.get();
+		}
 
-        public void setStatus(TradeEntryStatus tradeEntryStatus) {
-            this.status.set(tradeEntryStatus);
-        }
-        
-        public void setProjectName(String projectName){
-        	this.projectName.set(projectName);
-        }
+		public void setDescription(String description) {
+			this.description.set(description);
+		}
 
-        public void setId(String id)
-        {
-        	this.id.set(id);
-        }
-        
-        @Override
-        public ObservableValue<String> idProperty() {
-            return id;
-        }
+		public void setStatus(TradeEntryStatus tradeEntryStatus) {
+			this.status.set(tradeEntryStatus);
+		}
 
-        @Override
-        public ObservableValue<String> projectNameProperty() {
-            return projectName;
-        }
+		public void setProjectName(String projectName) {
+			this.projectName.set(projectName);
+		}
 
-        @Override
-        public ObservableValue<TradeEntryStatus> statusProperty() {
-            return status;
-        }
+		public void setId(String id) {
+			this.id.set(id);
+		}
 
-        @Override
-        public ObservableValue<String> synopsisProperty() {
-            return title;
-        }
+		@Override
+		public ObservableValue<String> idProperty() {
+			return id;
+		}
 
-        @Override
-        public ObservableValue<String> descriptionProperty() {
-            return description;
-        }
-        
-        public SimpleStringProperty getTitle() {
+		@Override
+		public ObservableValue<String> projectNameProperty() {
+			return projectName;
+		}
+
+		@Override
+		public ObservableValue<TradeEntryStatus> statusProperty() {
+			return status;
+		}
+
+		@Override
+		public ObservableValue<String> synopsisProperty() {
 			return title;
 		}
-        
-        public void setTitle(String title) {
-        	this.title.set(title);
-        }
-        
+
+		@Override
+		public ObservableValue<String> descriptionProperty() {
+			return description;
+		}
+
+		public SimpleStringProperty getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title.set(title);
+		}
+
 		public String getItemId() {
 			return itemId.get();
 		}
-		
-		public void setItemId(String itemId)
-		{
+
+		public void setItemId(String itemId) {
 			this.itemId.set(itemId);
 		}
+
 		@Override
 		public String getUser() {
-			
+
 			return user.get();
 		}
+
 		@Override
 		public String[] getAcceptableTrades() {
 			// TODO Auto-generated method stub
 			return this.acceptableTrades.toArray(new String[0]);
 		}
+
 		@Override
 		public void setUser(String user) {
 			this.user.set(user);
-			
+
 		}
+
 		@Override
 		public void setAcceptableTrades(String[] acceptableTrades) {
-			if(acceptableTrades != null)
-			{
+			if (acceptableTrades != null) {
 				ObservableList<String> observableList = FXCollections.observableArrayList(acceptableTrades);
 				this.acceptableTrades = new SimpleListProperty<String>(observableList);
-				
+
 			}
-			
+
 		}
-    }
+	}
 
-    // You create new trade entry by adding a TradeEntryStub instance to the tradeEntriesMap.
-    // the new id will be automatically added to the corresponding list in
-    // the projectsMap.
-    //
-    final MapChangeListener<String, TradeEntryStub> tradeEntriesMapChangeListener = new MapChangeListener<String, TradeEntryStub>() {
-        @Override
-        public void onChanged(Change<? extends String, ? extends TradeEntryStub> change) {
-            if (change.wasAdded()) {
-                final TradeEntryStub val = change.getValueAdded();
-                projectsMap.get(val.getProjectName()).add(val.getId());
-            }
-            if (change.wasRemoved()) {
-                final TradeEntryStub val = change.getValueRemoved();
-                projectsMap.get(val.getProjectName()).remove(val.getId());
-            }
-        }
-    };
-    
-    
+	// You create new trade entry by adding a TradeEntryStub instance to the
+	// tradeEntriesMap.
+	// the new id will be automatically added to the corresponding list in
+	// the projectsMap.
+	//
+	final MapChangeListener<String, TradeEntryStub> tradeEntriesMapChangeListener = new MapChangeListener<String, TradeEntryStub>() {
+		@Override
+		public void onChanged(Change<? extends String, ? extends TradeEntryStub> change) {
+			if (change.wasAdded()) {
+				final TradeEntryStub val = change.getValueAdded();
+				projectsMap.get(val.getProjectName()).add(val.getId());
+			}
+			if (change.wasRemoved()) {
+				final TradeEntryStub val = change.getValueRemoved();
+				projectsMap.get(val.getProjectName()).remove(val.getId());
+			}
+		}
+	};
 
-    private static <T> List<T> newList(T... items) {
-        return Arrays.asList(items);
-    }
+	private static <T> List<T> newList(T... items) {
+		return Arrays.asList(items);
+	}
 
+	@Override
+	public TradeEntryStub createTradeEntryFor(String projectName) {
+		assert projectNames.contains(projectName);
+		AtomicInteger tradeEntriesCounter = tradeEntryCounters.get(projectName);
+		final TradeEntryStub tradeEntry = new TradeEntryStub(projectName,
+				"TE-" + tradeEntriesCounter.incrementAndGet());
+		assert tradeEntriesMap.containsKey(tradeEntry.getId()) == false;
+		assert projectsMap.get(projectName).contains(tradeEntry.getId()) == false;
+		tradeEntriesMap.put(tradeEntry.getId(), tradeEntry);
+		return tradeEntry;
+	}
 
-    @Override
-    public TradeEntryStub createTradeEntryFor(String projectName) {
-        assert projectNames.contains(projectName);
-        AtomicInteger tradeEntriesCounter = tradeEntryCounters.get(projectName);
-        final TradeEntryStub tradeEntry = new TradeEntryStub(projectName, "TE-"+tradeEntriesCounter.incrementAndGet());
-        assert tradeEntriesMap.containsKey(tradeEntry.getId()) == false;
-        assert projectsMap.get(projectName).contains(tradeEntry.getId()) == false;
-        tradeEntriesMap.put(tradeEntry.getId(), tradeEntry);
-        return tradeEntry;
-    }
-    
-    @Override
-    public TradeEntryStub loadTradeEntry(InitTradeEntry tradeEntry) {
-        assert projectNames.contains(tradeEntry.getTradeId());
-        assert tradeEntriesMap.containsKey(tradeEntry.getId()) == false;
-        assert projectsMap.get(tradeEntry.getTradeId()).contains(tradeEntry.getId()) == false;
-        TradeEntryStub stub = new TradeEntryStub(tradeEntry.getTradeId(), tradeEntry.getId());
-        stub.setDescription(tradeEntry.getDescription());
-        stub.setSynopsis(tradeEntry.getName());
-        stub.setItemId(tradeEntry.getItemId());
-        stub.setUser(tradeEntry.getUser());
-        stub.setAcceptableTrades(tradeEntry.getAcceptableTrades());
-        tradeEntriesMap.put(tradeEntry.getId(), stub);
-        return stub;
-    }
+	@Override
+	public TradeEntryStub loadTradeEntry(InitTradeEntry tradeEntry) {
+		assert projectNames.contains(tradeEntry.getTradeId());
+		assert tradeEntriesMap.containsKey(tradeEntry.getId()) == false;
+		assert projectsMap.get(tradeEntry.getTradeId()).contains(tradeEntry.getId()) == false;
+		TradeEntryStub stub = new TradeEntryStub(tradeEntry.getTradeId(), tradeEntry.getId());
+		stub.setDescription(tradeEntry.getDescription());
+		stub.setSynopsis(tradeEntry.getName());
+		stub.setItemId(tradeEntry.getItemId());
+		stub.setUser(tradeEntry.getUser());
+		stub.setAcceptableTrades(tradeEntry.getAcceptableTrades());
+		tradeEntriesMap.put(tradeEntry.getId(), stub);
+		return stub;
+	}
 
-    @Override
-    public void deleteTradeEntry(String tradeEntryId) {
-        assert tradeEntriesMap.containsKey(tradeEntryId);
-        tradeEntriesMap.remove(tradeEntryId);
-    }
+	@Override
+	public void deleteTradeEntry(String tradeEntryId) {
+		assert tradeEntriesMap.containsKey(tradeEntryId);
+		tradeEntriesMap.remove(tradeEntryId);
+		// We also need to remove this item from all acceptable trade lists
+		Iterator<String> itr = tradeEntriesMap.keySet().iterator();
+		while (itr.hasNext()) {
+			String key = itr.next();
+			TradeEntry tradeEntry = tradeEntriesMap.get(key);
+			if (tradeEntry.getAcceptableTrades() != null && tradeEntry.getAcceptableTrades().length > 0) {
+				List<String> acceptableTrades = Arrays.asList(tradeEntry.getAcceptableTrades());
+				if (acceptableTrades.contains(tradeEntryId)) {
+					List<String> newList = new ArrayList<String>();
+					Iterator<String> itr2 = acceptableTrades.iterator();
+					while (itr2.hasNext()) {
+						String acceptableTrade = itr2.next();
+						if (!acceptableTrade.equals(tradeEntryId)) {
+							newList.add(acceptableTrade);
+						}
+					}
+					tradeEntry.setAcceptableTrades(acceptableTrades.toArray(new String[0]));
+				}
 
-    @Override
-    public ObservableList<String> getProjectNames() {
-        return projectNames;
-    }
+			}
+		}
+	}
 
-    @Override
-    public ObservableList<String> getTradeEntryIds(String projectName) {
-        return projectsMap.get(projectName);
-    }
+	@Override
+	public ObservableList<String> getProjectNames() {
+		return projectNames;
+	}
 
-    @Override
-    public TradeEntryStub getTradeEntry(String tradeEntryId) {
-        return tradeEntriesMap.get(tradeEntryId);
-    }
+	@Override
+	public ObservableList<String> getTradeEntryIds(String projectName) {
+		return projectsMap.get(projectName);
+	}
 
-    @Override
-    public void saveTradeEntry(String tradeEntryId, TradeEntryStatus status,
-            String synopsis, String description, String itemId, String[] acceptableTrades, String user) {
-        TradeEntryStub issue = getTradeEntry(tradeEntryId);
-        issue.setDescription(description);
-        issue.setSynopsis(synopsis);
-        issue.setStatus(status);
-        issue.setItemId(itemId);
-        issue.setAcceptableTrades(acceptableTrades);
-        issue.setUser(user);
-    }
+	@Override
+	public TradeEntryStub getTradeEntry(String tradeEntryId) {
+		return tradeEntriesMap.get(tradeEntryId);
+	}
 
-    public void writeState(){
-    	if(projectsMap != null && projectsMap.size() > 0)
-    	{
-    		Set<String> keys = projectsMap.keySet();
-    		Iterator<String> itr = keys.iterator();
-    		JSONArray trades = new JSONArray();
-    		while(itr.hasNext())
-    		{
-    			String tradeId = itr.next();
-    			ObservableList<String> tradeEntries = projectsMap.get(tradeId);
-    			Iterator<String> tradeEntryIterator = tradeEntries.iterator();
-    			JSONArray tradeEntriesArray = new JSONArray();
-    			while(tradeEntryIterator.hasNext())
-    			{
-    				String tradeEntryId = tradeEntryIterator.next();
-    				TradeEntry tradeEntry = tradeEntriesMap.get(tradeEntryId);
-    				if(tradeEntry.getUser() != null)
-    				{
-    					allUsers.add(tradeEntry.getUser());
-    				}
-    				JSONObject tradeEntryJson = createTradeEntry(tradeEntry);
-    				tradeEntriesArray.add(tradeEntryJson);
-    			}
-    			JSONObject trade = createTradeObject(tradeId, tradeEntryCounters.get(tradeId).get(), tradeEntriesArray);
-    			trades.add(trade);
-    		}
-    		JSONObject currentState = new JSONObject();
-    		currentState.put("trades", trades);
-    		
-    		try {
-    			FileWriter fileWriter = new FileWriter("c:\\abetrades\\trades.json");
+	@Override
+	public void saveTradeEntry(String tradeEntryId, TradeEntryStatus status, String synopsis, String description,
+			String itemId, String[] acceptableTrades, String user) {
+		TradeEntryStub issue = getTradeEntry(tradeEntryId);
+		issue.setDescription(description);
+		issue.setSynopsis(synopsis);
+		issue.setStatus(status);
+		issue.setItemId(itemId);
+		issue.setAcceptableTrades(acceptableTrades);
+		issue.setUser(user);
+	}
+
+	public void writeState() {
+		if (projectsMap != null && projectsMap.size() > 0) {
+			Set<String> keys = projectsMap.keySet();
+			Iterator<String> itr = keys.iterator();
+			JSONArray trades = new JSONArray();
+			while (itr.hasNext()) {
+				String tradeId = itr.next();
+				ObservableList<String> tradeEntries = projectsMap.get(tradeId);
+				Iterator<String> tradeEntryIterator = tradeEntries.iterator();
+				JSONArray tradeEntriesArray = new JSONArray();
+				while (tradeEntryIterator.hasNext()) {
+					String tradeEntryId = tradeEntryIterator.next();
+					TradeEntry tradeEntry = tradeEntriesMap.get(tradeEntryId);
+					if (tradeEntry.getUser() != null) {
+						allUsers.add(tradeEntry.getUser());
+					}
+					JSONObject tradeEntryJson = createTradeEntry(tradeEntry);
+					tradeEntriesArray.add(tradeEntryJson);
+				}
+				JSONObject trade = createTradeObject(tradeId, tradeEntryCounters.get(tradeId).get(), tradeEntriesArray);
+				trades.add(trade);
+			}
+			JSONObject currentState = new JSONObject();
+			currentState.put("trades", trades);
+
+			try {
+				FileWriter fileWriter = new FileWriter("c:\\abetrades\\trades.json");
 				currentState.writeJSONString(fileWriter);
 				fileWriter.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    		
-    		
-    	}
-    }
-    
-    private JSONObject createTradeObject(String tradeId, Integer startingId, JSONArray tradeEntries){
-    	JSONObject obj = new JSONObject();
-    	obj.put("tradeId", tradeId);
-    	obj.put("startingId", startingId);
-    	obj.put("tradeEntries", tradeEntries);
-    	return obj;
-    }
-    
-    private JSONObject createTradeEntry(TradeEntry tradeEntry)
-    {
-    	JSONObject obj = new JSONObject();
-    	obj.put("id", tradeEntry.getId());
-    	obj.put("itemId", tradeEntry.getItemId());
-    	obj.put("name", tradeEntry.getSynopsis());
-    	obj.put("description", tradeEntry.getDescription());
-    	obj.put("user", tradeEntry.getUser());
-    	JSONArray acceptableTrades = new JSONArray();
-    	if(tradeEntry.getAcceptableTrades() != null && tradeEntry.getAcceptableTrades().length > 0)
-    	{
-    		acceptableTrades.addAll(Arrays.asList(tradeEntry.getAcceptableTrades()));
-    	}
-    	obj.put("acceptableTrades", acceptableTrades);
-    	return obj;
-    }
-     
-    public void printResults(List<TradeResultWrapper> results)
-    {
-    	List<TradeResult> tradeResults = getItemsTrading(results);
-    	GroupByIndividualPrintFormatter byIndividualPrintFormatter = new GroupByIndividualPrintFormatter(tradeResults, allUsers);
-    	byIndividualPrintFormatter.print();
-    	
-    	try {
+
+		}
+	}
+
+	private JSONObject createTradeObject(String tradeId, Integer startingId, JSONArray tradeEntries) {
+		JSONObject obj = new JSONObject();
+		obj.put("tradeId", tradeId);
+		obj.put("startingId", startingId);
+		obj.put("tradeEntries", tradeEntries);
+		return obj;
+	}
+
+	private JSONObject createTradeEntry(TradeEntry tradeEntry) {
+		JSONObject obj = new JSONObject();
+		obj.put("id", tradeEntry.getId());
+		obj.put("itemId", tradeEntry.getItemId());
+		obj.put("name", tradeEntry.getSynopsis());
+		obj.put("description", tradeEntry.getDescription());
+		obj.put("user", tradeEntry.getUser());
+		JSONArray acceptableTrades = new JSONArray();
+		if (tradeEntry.getAcceptableTrades() != null && tradeEntry.getAcceptableTrades().length > 0) {
+			acceptableTrades.addAll(Arrays.asList(tradeEntry.getAcceptableTrades()));
+		}
+		obj.put("acceptableTrades", acceptableTrades);
+		return obj;
+	}
+
+	public void printResults(List<TradeResultWrapper> results) {
+		List<TradeResult> tradeResults = getItemsTrading(results);
+		GroupByIndividualPrintFormatter byIndividualPrintFormatter = new GroupByIndividualPrintFormatter(tradeResults,
+				allUsers);
+		byIndividualPrintFormatter.print();
+
+		try {
 			FileWriter fileWriter = new FileWriter("c:\\abetrades\\results.html");
 			fileWriter.write(byIndividualPrintFormatter.getResults());
 			fileWriter.close();
-    	} catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    }
-    
-    private List<TradeResult> getItemsTrading(
-			List<TradeResultWrapper> results) {
+
+	}
+
+	private List<TradeResult> getItemsTrading(List<TradeResultWrapper> results) {
 		List<TradeResult> tradeResults = new ArrayList<TradeResult>();
 		// Now store the new results
 		Iterator<TradeResultWrapper> itr = results.iterator();
@@ -445,12 +458,11 @@ public class TrackingServiceStub implements TrackingService {
 				if (tradeEntryId != null) {
 					// Find the TradeEntry
 					TradeEntry tradeEntry = tradeEntriesMap.get(tradeEntryId);
-							
+
 					if (tradeEntry != null) {
 						// Set the sender information
 						TradeResult tradeResult = new TradeResult();
-						tradeResult = setSenderInformation(tradeResult, sender,
-								tradeEntry);
+						tradeResult = setSenderInformation(tradeResult, sender, tradeEntry);
 
 						// We also need the profile link and profile image url
 						// of the user
@@ -463,12 +475,11 @@ public class TrackingServiceStub implements TrackingService {
 						String receiverTradeEntryId = receiver.getName();
 						receiverUsername = restoreUsername(receiverUsername);
 						if (receiverUsername != null) {
-							setReceiverInformation(tradeResult,
-									receiverTradeEntryId);
+							setReceiverInformation(tradeResult, receiverTradeEntryId);
 						}
 
 						tradeResults.add(tradeResult);
-						
+
 					}
 
 				}
@@ -478,9 +489,8 @@ public class TrackingServiceStub implements TrackingService {
 		}
 		return tradeResults;
 	}
-    
-    private TradeResult setSenderInformation(TradeResult tradeResult,
-			Vertex sender, TradeEntry tradeEntry) {
+
+	private TradeResult setSenderInformation(TradeResult tradeResult, Vertex sender, TradeEntry tradeEntry) {
 		String senderUsername = sender.getUser();
 
 		if (senderUsername != null) {
@@ -491,15 +501,13 @@ public class TrackingServiceStub implements TrackingService {
 				tradeResult.setGiver(tradeEntry.getUser());
 
 				tradeResult.setTradeEntry(tradeEntry);
-				
 
 			}
 		}
 		return tradeResult;
 	}
 
-	private void setReceiverInformation(TradeResult tradeResult,
-			String receiverTradeEntryId) {
+	private void setReceiverInformation(TradeResult tradeResult, String receiverTradeEntryId) {
 
 		if (receiverTradeEntryId != null) {
 			TradeEntry receiverTradeEntry = tradeEntriesMap.get(receiverTradeEntryId);
@@ -507,7 +515,7 @@ public class TrackingServiceStub implements TrackingService {
 
 		}
 	}
-	
+
 	private String restoreUsername(String username) {
 		username = username.replace("(", "");
 		username = username.replace(")", "");
